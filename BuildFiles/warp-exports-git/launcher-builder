@@ -36,5 +36,5 @@ for line in \"\${CODEMAPFILE[@]}\"; do
     fi
 done
 
-/usr/bin/electron33 \"/usr/lib/warp-exports/$e/app\" \"\${appflags[@]}\"  \"\$@\"
+/usr/bin/electron \"/usr/lib/warp-exports/$e/app\" \"\${appflags[@]}\"  \"\$@\"
 """ > "$2"

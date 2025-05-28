@@ -16,7 +16,7 @@ repos=()
 prepare_packages=()
 source ./BuildAUR/Packages
 
-yay="yay -S --noconfirm --builddir=./build"
+yay="sudo --set-home -u builder yay -S --noconfirm --builddir=./build"
 
 # 初始配置
 

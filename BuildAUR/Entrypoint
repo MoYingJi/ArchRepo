@@ -61,7 +61,7 @@ $yay "${packages[@]}"
 # 克隆仓库
 
 cd ./BuildFiles
-chmod a+rwx ./BuildFiles
+chmod a+rwx .
 for repo in "${repos[@]}"; do
     $sudo git clone "${repo}"
 done

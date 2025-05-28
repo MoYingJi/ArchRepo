@@ -5,8 +5,8 @@
 
 packages=(
     "visual-studio-code-bin"
+    "linuxqq-nt-bwrap"
 )
 
 repos=(
-    "https://aur.archlinux.org/linuxqq-nt-bwrap.git"
 )

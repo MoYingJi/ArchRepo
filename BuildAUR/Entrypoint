@@ -12,10 +12,14 @@ pacman -S base-devel git --noconfirm
 packages=()
 repos=()
 prepare_packages=()
+declare -A prepare_map=()
 source ./BuildAUR/Packages
 
 sudo="sudo --set-home -u builder"
-yay="$sudo yay -S --noconfirm --builddir=./build"
+#sy="$sudo yay -S --noconfirm --builddir=./build"
+sy="$sudo paru -S --noconfirm --clonedir=./build"
+#mkpkg="$sudo makepkg -si --noconfirm"
+mkpkg="$sudo paru -Bi --noconfirm ."
 
 # 初始配置
 
@@ -32,7 +36,8 @@ pacman-key --init
 pacman-key --lsign-key "farseerfc@archlinux.org"
 pacman -Sy --noconfirm && pacman -S --noconfirm archlinuxcn-keyring
 pacman -Syu --noconfirm archlinux-keyring
-pacman -Syu --noconfirm yay
+#pacman -Syu --noconfirm yay
+pacman -Syu --noconfirm paru
 
 # 查找 /etc/makepkg.conf 并去除 debug 选项
 # https://github.com/Neboer/archlinuxus/blob/main/prepare-arch-env/prepare-makepkg.sh
@@ -51,12 +56,12 @@ new_line="OPTIONS=(${OPTIONS[@]})"
 sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
 # 安装准备包
-[[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"
+[[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
 
 # 安装 AUR 包
 mkdir ./build
 chmod a+rwx ./build
-$yay "${packages[@]}"
+$sy "${packages[@]}"
 
 # 克隆仓库
 
@@ -78,9 +83,10 @@ do if [[ -d "$dir" ]] && [[ -f "$dir/PKGBUILD" ]]
 then cd "$dir"
     prepare_packages=()
     [[ -f "PrepareAction" ]] && source "PrepareAction"
-    [[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"
-    $sudo makepkg -si --noconfirm
-    mv "*.pkg.tar.zst" ../../pkgs
+    [[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
+    [[ -z "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
+    $mkpkg
+    mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done
 
 cd ..

@@ -56,15 +56,17 @@ new_line="OPTIONS=(${OPTIONS[@]})"
 sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
 # 安装准备包
+echo :: "Installing prepare packages"
 [[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
 
 # 安装 AUR 包
+echo :: "Building AUR packages"
 mkdir ./build
 chmod a+rwx ./build
 $sy "${packages[@]}"
 
 # 克隆仓库
-
+echo :: "Cloning repositories"
 cd ./BuildFiles
 chmod a+rwx .
 for repo in "${repos[@]}"; do
@@ -73,14 +75,13 @@ done
 cd ..
 
 # 安装自定义包
-
+echo :: "Building custom packages"
 mkdir ./pkgs
-
 cd ./BuildFiles
-
 for dir in *
 do if [[ -d "$dir" ]] && [[ -f "$dir/PKGBUILD" ]]
 then cd "$dir"
+    echo :::: "Building $dir"
     prepare_packages=()
     [[ -f "PrepareAction" ]] && source "PrepareAction"
     [[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"

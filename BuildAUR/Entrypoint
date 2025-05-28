@@ -22,7 +22,7 @@ yay="$sudo yay -S --noconfirm --builddir=./build"
 useradd builder -m
 echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 chmod -R a+rw .
-
+package 
 cat << EOM >> /etc/pacman.conf
 [archlinuxcn]
 Server = https://repo.archlinuxcn.org/x86_64
@@ -69,11 +69,13 @@ cd ..
 
 # 安装自定义包
 
-cd ./BuildFiles
 mkdir ./pkgs
 
+cd ./BuildFiles
+
 for dir in *
-do if [[ -d "$dir" ]]; then cd "$dir"
+do if [[ -d "$dir" ]] && [[ -f "$dir/PKGBUILD" ]]
+then cd "$dir"
     prepare_packages=()
     [[ -f "PrepareAction" ]] && source "PrepareAction"
     [[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"

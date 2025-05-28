@@ -4,6 +4,9 @@ set +H
 set -e
 
 export LANG=zh_CN.UTF-8
+echo "LANG=$LANG" >> /etc/locale.conf
+echo "$LANG" >> /etc/locale.gen
+locale-gen
 
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 date

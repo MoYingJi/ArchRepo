@@ -5,7 +5,7 @@ set -e
 
 export LANG=zh_CN.UTF-8
 echo "LANG=$LANG" >> /etc/locale.conf
-echo "$LANG" >> /etc/locale.gen
+echo "$LANG UTF-8" >> /etc/locale.gen
 locale-gen
 
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -19,7 +19,8 @@ repos=()
 prepare_packages=()
 source ./BuildAUR/Packages
 
-yay="sudo --set-home -u builder yay -S --noconfirm --builddir=./build"
+sudo="sudo --set-home -u builder"
+yay="$sudo yay -S --noconfirm --builddir=./build"
 
 # 初始配置
 
@@ -59,13 +60,15 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
 # 安装 AUR 包
 mkdir ./build
+chmod a+rwx ./build
 $yay "${packages[@]}"
 
 # 克隆仓库
 
 cd ./BuildFiles
+chmod a+rwx ./BuildFiles
 for repo in "${repos[@]}"; do
-    git clone "${repo}"
+    $sudo git clone "${repo}"
 done
 cd ..
 
@@ -79,14 +82,13 @@ do if [[ -d "$dir" ]]; then cd "$dir"
     prepare_packages=()
     [[ -f "PrepareAction" ]] && source "PrepareAction"
     [[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"
-    makepkg -si --noconfirm
+    $sudo makepkg -si --noconfirm
     mv "*.pkg.tar.zst" ../../pkgs
 cd ..; fi done
 
 cd ..
 
 # 移动包
-
 
 cd ./build
 for dir in *; do

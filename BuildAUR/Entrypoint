@@ -57,7 +57,7 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
 # 安装准备包
 echo :: "Installing prepare packages"
-[[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
+[[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
 
 # 安装 AUR 包
 echo :: "Building AUR packages"
@@ -84,8 +84,8 @@ then cd "$dir"
     echo :::: "Building $dir"
     prepare_packages=()
     [[ -f "PrepareAction" ]] && source "PrepareAction"
-    [[ -z "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
-    [[ -z "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
+    [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
+    [[ -n "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
     $mkpkg
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done
@@ -98,7 +98,7 @@ cd ./build
 for dir in *; do
     [[ ! -d "$dir" ]] && continue
     match=
-    for pkg in "${package[@]}"; do
+    for pkg in "${packages[@]}"; do
         if [[ "$pkg" == "$dir" ]]
         then match=1; break; fi
     done

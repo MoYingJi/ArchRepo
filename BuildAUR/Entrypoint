@@ -22,7 +22,7 @@ yay="$sudo yay -S --noconfirm --builddir=./build"
 useradd builder -m
 echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 chmod -R a+rw .
-package 
+
 cat << EOM >> /etc/pacman.conf
 [archlinuxcn]
 Server = https://repo.archlinuxcn.org/x86_64

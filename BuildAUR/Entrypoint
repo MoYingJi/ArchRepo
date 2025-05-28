@@ -1,0 +1,100 @@
+#!/usr/bin/bash
+
+set +H
+set -e
+
+export LANG=zh_CN.UTF-8
+
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+date
+
+pacman -Syu --noconfirm
+pacman -S base-devel git --noconfirm
+
+packages=()
+repos=()
+prepare_packages=()
+source ./BuildAUR/Packages
+
+yay="yay -S --noconfirm --builddir=./build"
+
+# 初始配置
+
+useradd builder -m
+echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+chmod -R a+rw .
+
+cat << EOM >> /etc/pacman.conf
+[archlinuxcn]
+Server = https://repo.archlinuxcn.org/x86_64
+EOM
+
+pacman-key --init
+pacman-key --lsign-key "farseerfc@archlinux.org"
+pacman -Sy --noconfirm && pacman -S --noconfirm archlinuxcn-keyring
+pacman -Syu --noconfirm archlinux-keyring
+pacman -Syu --noconfirm yay
+
+# 查找 /etc/makepkg.conf 并去除 debug 选项
+# https://github.com/Neboer/archlinuxus/blob/main/prepare-arch-env/prepare-makepkg.sh
+
+file="/etc/makepkg.conf"
+eval "$(grep '^OPTIONS=' "$file")"
+has_debug=0; has_negated_debug=0
+for i in "${!OPTIONS[@]}"
+do case "${OPTIONS[i]}" in
+    "debug") OPTIONS[i]="!debug"; has_debug=1;;
+    "!debug") has_negated_debug=1;;
+esac done
+if [[ $has_debug -eq 0 && $has_negated_debug -eq 0 ]]
+then OPTIONS+=("!debug"); fi
+new_line="OPTIONS=(${OPTIONS[@]})"
+sed -i.bak "/^OPTIONS=/c$new_line" "$file"
+
+# 安装准备包
+[[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"
+
+# 安装 AUR 包
+mkdir ./build
+$yay "${packages[@]}"
+
+# 克隆仓库
+
+cd ./BuildFiles
+for repo in "${repos[@]}"; do
+    git clone "${repo}"
+done
+cd ..
+
+# 安装自定义包
+
+cd ./BuildFiles
+mkdir ./pkgs
+
+for dir in *
+do if [[ -d "$dir" ]]; then cd "$dir"
+    prepare_packages=()
+    [[ -f "PrepareAction" ]] && source "PrepareAction"
+    [[ -z "$prepare_packages" ]] && $yay "${prepare_packages[@]}"
+    makepkg -si --noconfirm
+    mv "*.pkg.tar.zst" ../../pkgs
+cd ..; fi done
+
+cd ..
+
+# 移动包
+
+
+cd ./build
+for dir in *; do
+    [[ ! -d "$dir" ]] && continue
+    match=
+    for pkg in "${package[@]}"; do
+        if [[ "$pkg" == "$dir" ]]
+        then match=1; break; fi
+    done
+    [[ -z "$match" ]] && continue
+    mv "$dir"/*.pkg.tar.zst ../pkgs
+done
+cd ..
+

@@ -1,0 +1,15 @@
+diff --git a/src/main/utils.js b/src/main/utils.js
+--- a/src/main/utils.js
++++ b/src/main/utils.js
+
+@@ -15,1 +15,1 @@
+-const userDataPath = path.resolve(appRoot, 'userData')
++const userDataPath = path.resolve(app.getPath('userData'), 'userData')
+
+@@ -203,4 +203,6 @@
+ async function getCacheText(gamePath) {
++  if (process.platform == 'linux' || process.platform == 'darwin')
++    gamePath = gamePath.replace(/^Z:/g, "");
+   const results = await glob(path.join(gamePath, '/webCaches{/,/*/}Cache/Cache_Data/data_2'), {
+     stat: true,
+ 		withFileTypes: true,

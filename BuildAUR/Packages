@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+#shellcheck disable=SC2034
+
+# 这里是一些 AUR 包
+
+packages=(
+    "visual-studio-code-bin"
+)
+
+repos=(
+    "https://aur.archlinux.org/linuxqq-nt-bwrap.git"
+)

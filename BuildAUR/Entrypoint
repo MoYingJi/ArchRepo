@@ -13,13 +13,12 @@ packages=()
 repos=()
 prepare_packages=()
 declare -A prepare_map=()
+installs=()
 source ./BuildAUR/Packages
 
 sudo="sudo --set-home -u builder"
 #sy="$sudo yay -S --noconfirm --builddir=./build"
 sy="$sudo paru -S --noconfirm --clonedir=./build"
-#mkpkg="$sudo makepkg -si --noconfirm"
-mkpkg="$sudo paru -Bi --noconfirm ."
 
 # 初始配置
 
@@ -59,16 +58,18 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 echo :: "Installing prepare packages"
 [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
 
-# 安装 AUR 包
-echo :: "Building AUR packages"
-mkdir ./build
-chmod a+rwx ./build
-$sy "${packages[@]}"
+# 克隆 AUR
+echo :: "Cloning AUR packages"
+cd ./BuildFiles
+chmod a+rwx .
+for pkg in "${packages[@]}"; do
+    $sudo paru -G "$pkg" --noconfirm
+done
+cd ..
 
 # 克隆仓库
 echo :: "Cloning repositories"
 cd ./BuildFiles
-chmod a+rwx .
 for repo in "${repos[@]}"; do
     $sudo git clone "${repo}"
 done
@@ -87,24 +88,16 @@ then cd "$dir"
     [[ -f "PrepareAction" ]] && source "PrepareAction"
     [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
     [[ -n "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
-    $mkpkg
+
+    for pkg in "${installs[@]}"; do
+        if [[ "$pkg" == "$dir" ]]
+        then match=1; break; fi
+    done
+    if [[ -n "$match" ]]
+    then $sudo paru -Bi --noconfirm .
+    else $sudo paru -B --noconfirm .
+    fi
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done
 
 cd ..
-
-# 移动包
-
-cd ./build
-for dir in *; do
-    [[ ! -d "$dir" ]] && continue
-    match=
-    for pkg in "${packages[@]}"; do
-        if [[ "$pkg" == "$dir" ]]
-        then match=1; break; fi
-    done
-    [[ -z "$match" ]] && continue
-    mv "$dir"/*.pkg.tar.zst ../pkgs
-done
-cd ..
-

@@ -1,13 +1,18 @@
 #!/usr/bin/bash
 #shellcheck disable=SC2034
 
-# 这里是一些 AUR 包
-
+# 要安装的包
 packages=(
     "linuxqq-nt-bwrap"
 )
 
 repos=(
+)
+
+prepare_packages=(
+)
+
+installs=(
 )
 
 prepare_map=(

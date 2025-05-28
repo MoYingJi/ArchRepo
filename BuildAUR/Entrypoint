@@ -78,6 +78,7 @@ cd ..
 echo :: "Building custom packages"
 mkdir ./pkgs
 cd ./BuildFiles
+chown -R builder:builder .
 for dir in *
 do if [[ -d "$dir" ]] && [[ -f "$dir/PKGBUILD" ]]
 then cd "$dir"

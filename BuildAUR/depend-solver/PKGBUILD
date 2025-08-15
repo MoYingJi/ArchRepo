@@ -1,6 +1,6 @@
 # Maintainer: MoYingJi <moyingjiaw@outlook.com>
 
-pkgname=electron-fucker
+pkgname=depend-solver
 pkgver=1
 pkgrel=1
 arch=("any")

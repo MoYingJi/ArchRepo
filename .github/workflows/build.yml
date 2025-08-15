@@ -19,7 +19,7 @@ jobs:
           - name: Run docker
             uses: addnab/docker-run-action@v3
             with:
-                image: archlinux:latest
+                image: archlinux:base-devel
                 shell: bash
                 options: |
                     -v ${{ github.workspace }}:/work
@@ -31,6 +31,7 @@ jobs:
             uses: ncipollo/release-action@v1
             with:
                 allowUpdates: true
+                removeArtifacts: true
                 tag: "packages"
                 artifacts: "./pkgs/*.pkg.tar.zst"
                 token: ${{ secrets.GITHUB_TOKEN }}

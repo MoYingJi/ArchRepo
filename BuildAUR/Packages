@@ -3,7 +3,6 @@
 
 # 要安装的包
 packages=(
-    "linuxqq-nt-bwrap"
 )
 
 repos=(

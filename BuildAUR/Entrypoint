@@ -56,7 +56,12 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
 # 安装准备包
 echo :: "Installing prepare packages"
+cd ./BuildAUR
+cd depend-solver
+makepkg -si --noconfirm
+cd ..
 [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
+cd ..
 
 # 克隆 AUR
 echo :: "Cloning AUR packages"

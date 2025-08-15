@@ -58,7 +58,8 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 echo :: "Installing prepare packages"
 cd ./BuildAUR
 cd depend-solver
-makepkg -si --noconfirm
+chown -R builder:builder .
+$sudo makepkg -si --noconfirm
 cd ..
 [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
 cd ..

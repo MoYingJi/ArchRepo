@@ -18,7 +18,8 @@ declare -A prepare_map=()
 source ./BuildAUR/Packages
 
 sudo="sudo --set-home -u builder"
-sy="$sudo yay -S --noconfirm --builddir=./build"
+pa="--noconfirm --clonedir /work/BuildFiles"
+sy="$sudo paru -S $pa"
 
 # 初始配置
 
@@ -31,11 +32,13 @@ cat << EOM >> /etc/pacman.conf
 Server = https://repo.archlinuxcn.org/x86_64
 EOM
 
+chown -R builder:builder .
+
 pacman-key --init
 pacman-key --lsign-key "farseerfc@archlinux.org"
 pacman -Sy --noconfirm && pacman -S --noconfirm archlinuxcn-keyring
 pacman -Syu --noconfirm archlinux-keyring
-pacman -Syu --noconfirm yay
+pacman -Syu --noconfirm paru
 
 # 查找 /etc/makepkg.conf 并去除 debug 选项
 # https://github.com/Neboer/archlinuxus/blob/main/prepare-arch-env/prepare-makepkg.sh
@@ -57,7 +60,6 @@ sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 echo :: "Installing prepare packages"
 cd ./BuildAUR
 cd depend-solver
-chown -R builder:builder .
 IFS=$'\n' echo -n "${fake_depend[*]}" > pkgs.txt
 $sudo makepkg -si --noconfirm
 cd ..
@@ -69,7 +71,7 @@ echo :: "Cloning AUR packages"
 cd ./BuildFiles
 chmod a+rwx .
 for pkg in "${packages[@]}"; do
-    $sudo yay -G "$pkg" --noconfirm
+    $sudo paru -G "$pkg" --noconfirm
 done
 cd ..
 
@@ -85,7 +87,6 @@ cd ..
 echo :: "Building custom packages"
 mkdir ./pkgs
 cd ./BuildFiles
-chown -R builder:builder .
 for dir in *
 do if [[ -d "$dir" ]] && [[ -f "$dir/PKGBUILD" ]]
 then cd "$dir"
@@ -95,7 +96,7 @@ then cd "$dir"
     [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
     [[ -n "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
 
-    $sudo yay -Bi . --noconfirm
+    $sudo paru -B . $pa
 
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done

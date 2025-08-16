@@ -101,7 +101,7 @@ then cd "$dir"
     done
     if [[ -n "$match" ]]
         then yay -Bi . --noconfirm
-        else makepkg -s --noconfirm
+        else $sudo makepkg -s --noconfirm
     fi
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done

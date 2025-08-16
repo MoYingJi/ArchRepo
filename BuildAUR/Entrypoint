@@ -95,7 +95,7 @@ then cd "$dir"
     [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
     [[ -n "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
 
-    yay -Bi . --noconfirm
+    $sudo yay -Bi . --noconfirm
 
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done

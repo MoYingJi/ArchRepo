@@ -95,14 +95,8 @@ then cd "$dir"
     [[ -n "$prepare_packages" ]] && $sy "${prepare_packages[@]}"
     [[ -n "${prepare_map[$dir]}" ]] && $sy "${prepare_map[$dir]}"
 
-    for pkg in "${needs_helper[@]}"; do
-        if [[ "$pkg" == "$dir" ]]
-        then match=1; break; fi
-    done
-    if [[ -n "$match" ]]
-        then yay -Bi . --noconfirm
-        else $sudo makepkg -s --noconfirm
-    fi
+    yay -Bi . --noconfirm
+
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done
 

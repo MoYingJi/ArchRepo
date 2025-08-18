@@ -3,8 +3,10 @@
 set +H
 set -e
 
-ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-date
+echo ::group:: Init
+
+# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+# date
 
 pacman -Syu git --noconfirm
 
@@ -55,6 +57,12 @@ then OPTIONS+=("!debug"); fi
 new_line="OPTIONS=(${OPTIONS[@]})"
 sed -i.bak "/^OPTIONS=/c$new_line" "$file"
 
+echo ::endgroup::
+
+
+
+echo ::group:: Prepare
+
 # 安装准备包
 echo :: "Installing prepare packages"
 cd ./BuildAUR
@@ -82,8 +90,11 @@ for repo in "${repos[@]}"; do
 done
 cd ..
 
+echo ::endgroup::
+
+
 # 安装自定义包
-echo :: "Building custom packages"
+echo ::group:: Building
 mkdir ./pkgs
 cd ./BuildFiles
 for dir in *
@@ -99,5 +110,5 @@ then cd "$dir"
 
     mv ./*.pkg.tar.zst ../../pkgs
 cd ..; fi done
-
 cd ..
+echo ::endgroup::

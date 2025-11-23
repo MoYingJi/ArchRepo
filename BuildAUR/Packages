@@ -3,7 +3,7 @@
 
 # 要安装的包
 packages=(
-    linuxqq-nt-bwrap
+    millennium
 )
 
 repos=(
@@ -14,7 +14,6 @@ prepare_packages=(
 
 fake_depend=(
     aseprite=1.3.14.4 # for `aseprite-universal-pixel-theme-zh-hans`
-    kwin # for `kwin-plugins-moyingji-git`
 )
 
 prepare_map=(

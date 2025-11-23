@@ -13,7 +13,8 @@ prepare_packages=(
 )
 
 fake_depend=(
-    aseprite=1.3.14.4 # for `aseprite-universal-pixel-theme-zh-hans`
+    aseprite # for `aseprite-universal-pixel-theme-zh-hans`
+    steam # for `millennium`
 )
 
 prepare_map=(

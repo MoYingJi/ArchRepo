@@ -20,7 +20,7 @@ prepare() {
 }
 
 package() {
-	depends=('aseprite>=1.3.3')
+	depends=('aseprite')
 
 	install -vDm 644 aseprite-universal-pixel-theme-zh-hans/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
